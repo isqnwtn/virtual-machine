@@ -7,6 +7,9 @@
 #define MEMORY_SIZE 2048
 #define REGISTER_SIZE 8
 
+enum INST_T{
+  ADD,SUB,MUL,DIV,LOAD,STORE
+};
 
 int main(int argc,char **argv){
 
