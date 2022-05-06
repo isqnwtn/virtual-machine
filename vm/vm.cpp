@@ -10,7 +10,7 @@
  */
 #define MAX_INST_LEN 100
 #define MEMORY_SIZE 2048
-#define REGISTER_SIZE 8
+#define REGISTER_SIZE 16
 
 /*INSTRUCTION SET ARCHITECTURE
   * Available instructions - ADD,SUB,MUL,DIV,LOAD,STORE
@@ -19,11 +19,20 @@
   (Instruction arch)
   (---4bits-- , --60bits-- )
   (--opcode-- , --arguments--)
+    FOR BINARY INSTRUCTIONS
+   (--4bits--,--4bits--,--4bits--,--4bits--,--rest--)
+   ( opcode  ,  arg1   ,  arg2   ,  arg3   ,  not used      )
 */
 enum OPCODE{
   ADD,SUB,MUL,DIV,LOAD,STORE
 };
 
+/* GLOBAL VARIABLES
+*/
+uint64_t INSTRUCTIONS[MAX_INST_LEN];
+int64_t MEMORY[MEMORY_SIZE];
+int64_t REGISTERS[REGISTER_SIZE];
+  
 void processInst(uint64_t inst){
   uint8_t op_code = (inst>>60); // to get the first four bits
   switch(op_code){
@@ -51,18 +60,21 @@ void processInst(uint64_t inst){
   }
 }
 
-uint64_t generateInst(OPCODE opcode){
-  return ((uint64_t)opcode<<60);
+uint64_t generateInst(OPCODE opcode
+                     ,uint8_t arg1
+                     ,uint8_t arg2
+                     ,uint8_t arg3){
+  uint64_t inst = ((uint64_t)opcode)<<60;
+  inst = inst | ((uint64_t)arg1<<56);
+  inst = inst | ((uint64_t)arg2<<52);
+  inst = inst | ((uint64_t)arg3<<48);
+  return inst;
 }
 
 int main(int argc,char **argv){
 
-  uint64_t INSTRUCTIONS[MAX_INST_LEN];
-  int64_t MEMORY[MEMORY_SIZE];
-  int64_t REGISTERS[REGISTER_SIZE];
-  
-  for(int i=0; i<MAX_INST_LEN; i++){
-    INSTRUCTIONS[i] = generateInst((OPCODE)(rand()%STORE));
+    for(int i=0; i<MAX_INST_LEN; i++){
+    INSTRUCTIONS[i] = generateInst((OPCODE)(rand()%STORE),0,0,0);
   }
   
   for(int i=0; i<MAX_INST_LEN; i++){
